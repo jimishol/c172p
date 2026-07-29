@@ -2513,6 +2513,16 @@
             </direction>
         </force>
 
+	<!--
+            TEMPORARY WORKAROUND FOR JSBSIM SOLVER SATURATION (JSBSim #1489 / c172p #1595 / PR #1596)
+            Compensates for tailwind tail-drop by neutralizing direct base aero pitch moments 
+            during parking and low-speed taxi.
+            
+            Root Cause: JSBSim's PGS ground friction solver saturates (hits max 50 iterations limit) 
+            at low ground speeds under tailwinds, causing premature pitch-up / tail-drop.
+            
+            REMOVE THIS BLOCK once JSBSim #1489 is fixed upstream and integrated into FlightGear.
+        -->
 	<moment name="parked-pitch-friction-compensation" frame="BODY">
             <description>Compensates for tailwind tail-drop by neutralizing direct base aero pitch moments during parking and low-speed taxi</description>
             <direction>
@@ -2522,6 +2532,7 @@
             </direction>
             <function>
                 <product>
+                    <!-- Fade out as groundspeed rises above low-speed taxi (~20 kts) -->
                     <table>
                         <independentVar>velocities/vg-fps</independentVar>
                         <tableData>
@@ -2530,6 +2541,7 @@
                         </tableData>
                     </table>
 
+                    <!-- Activate exclusively during tailwinds (reverse flow) -->
                     <table>
                         <independentVar>velocities/u-aero-fps</independentVar>
                         <tableData>
@@ -2540,6 +2552,7 @@
                         </tableData>
                     </table>
 
+                    <!-- Neutralize base aerodynamic pitching moment -->
                     <product>
                         <value> -1.0 </value>
                         <property>moments/m-aero-lbsft</property>
