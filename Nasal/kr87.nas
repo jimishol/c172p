@@ -37,14 +37,14 @@ var timer = {
        return me.timeN.getDoubleValue();
     },
 
-    start : func { 
-       me.runningN.setBoolValue( 1 );
-       me.clock.start();
-    },
-
-    stop : func { 
-       me.runningN.setBoolValue( 0 ); 
-       me.clock.stop();
+    start : func {  
+       if (me.clock.isRunning) return;  
+       me.runningN.setBoolValue( 1 );  
+    },  
+  
+    stop : func {  
+       if (!me.clock.isRunning) return;  
+       me.runningN.setBoolValue( 0 );  
     },
 
     reset : func {
