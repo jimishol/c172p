@@ -37,14 +37,14 @@ var timer = {
        return me.timeN.getDoubleValue();
     },
 
-    start : func { 
-       me.runningN.setBoolValue( 1 );
-       me.clock.start();
-    },
-
-    stop : func { 
-       me.runningN.setBoolValue( 0 ); 
-       me.clock.stop();
+    start : func {  
+       if (me.clock.isRunning) return;  
+       me.runningN.setBoolValue( 1 );  
+    },  
+  
+    stop : func {  
+       if (!me.clock.isRunning) return;  
+       me.runningN.setBoolValue( 0 );  
     },
 
     reset : func {
@@ -250,6 +250,11 @@ var kr87 = {
 };
 
 
+var adf0_instance = nil;
+
 setlistener("/sim/signals/fdm-initialized", func {
-    kr87.new( "/instrumentation/adf[0]" ).update();
-} );
+    if (adf0_instance == nil) {
+        adf0_instance = kr87.new( "/instrumentation/adf[0]" );
+        adf0_instance.update();
+    }
+});
